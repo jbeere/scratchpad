@@ -1,0 +1,191 @@
+<project name="Scala EJB Application" default="package.ear" basedir=".">
+
+    <property environment="env"/>
+
+    <property file="personal.properties"/>
+    <property file="build.properties"/>
+
+    <fileset id="lib.scala" dir="${lib.dir}">
+        <include name="scala-library.jar"/>
+    </fileset>
+
+    <path id="classpath.scala">
+        <fileset refid="lib.scala"/>
+    </path>
+
+    <path id="classpath.scala.compiler">
+        <path refid="classpath.scala"/>
+        <fileset dir="${lib.dir}">
+            <include name="scala-compiler.jar"/>
+        </fileset>
+    </path>
+
+    <path id="classpath.javaee">
+        <fileset dir="${javaee.lib.dir}">
+            <include name="javaee.jar"/>
+        </fileset>
+    </path>
+
+    <path id="classpath.service.depend">
+        <path refid="classpath.javaee"/>
+        <path refid="classpath.scala"/>
+        <fileset dir="${build.common.dir}">
+            <include name="common.jar"/>
+        </fileset>
+    </path>
+
+    <path id="classpath.web.depend">
+        <path refid="classpath.javaee"/>
+        <path refid="classpath.scala"/>
+        <fileset dir="${build.common.dir}">
+            <include name="common.jar"/>
+        </fileset>
+    </path>
+
+    <path id="classpath.common.depend">
+        <path refid="classpath.scala"/>
+    </path>
+
+    <taskdef resource="scala/tools/ant/antlib.xml">
+        <classpath refid="classpath.scala.compiler"/>
+    </taskdef>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="prepare">
+        <mkdir dir="${build.dir}"/>
+    </target>
+
+    <target name="prepare.common" depends="prepare">
+        <mkdir dir="${build.common.dir}"/>
+        <mkdir dir="${build.common.dir}/bin"/>
+    </target>
+
+    <target name="prepare.service" depends="prepare">
+        <mkdir dir="${build.service.dir}"/>
+        <mkdir dir="${build.service.dir}/bin"/>
+    </target>
+
+    <target name="prepare.web" depends="prepare">
+        <mkdir dir="${build.web.dir}"/>
+        <mkdir dir="${build.web.dir}/bin"/>
+    </target>
+
+    <target name="compile.common" depends="prepare.common">
+        <javac srcdir="${src.common.dir}/java" destdir="${build.common.dir}/bin" debug="true"/>
+        <scalac
+                srcdir="${src.common.dir}/scala"
+                destdir="${build.common.dir}/bin"
+                classpathref="classpath.common.depend"
+                force="changed"/>
+    </target>
+
+    <target name="compile.service" depends="prepare.service, package.common">
+        <echo message="${build.common.dir}/bin"/>
+        <javac srcdir="${src.service.dir}/java" destdir="${build.service.dir}/bin" debug="true"/>
+        <scalac
+                srcdir="${src.service.dir}/scala"
+                destdir="${build.service.dir}/bin"
+                classpathref="classpath.service.depend"
+                force="changed"/>
+    </target>
+
+    <target name="compile.web" depends="prepare.web, package.common">
+        <javac srcdir="${src.web.dir}/java" destdir="${build.web.dir}/bin" debug="true"
+               classpathref="classpath.javaee"/>
+        <scalac
+                srcdir="${src.web.dir}/scala"
+                destdir="${build.web.dir}/bin"
+                classpathref="classpath.web.depend"
+                force="changed"/>
+    </target>
+
+    <target name="package.common" depends="compile.common">
+        <jar jarfile="${build.common.dir}/common.jar">
+            <fileset dir="${build.common.dir}/bin">
+                <include name="**/*"/>
+            </fileset>
+            <fileset dir="${src.common.dir}/scala">
+                <include name="**/*"/>
+            </fileset>
+            <fileset dir="${src.common.dir}/java">
+                <include name="**/*"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package.service" depends="compile.service">
+        <jar jarfile="${build.service.dir}/service.jar">
+            <fileset dir="${build.service.dir}/bin">
+                <include name="**/*"/>
+            </fileset>
+            <!-- include the source, why not? -->
+            <fileset dir="${src.service.dir}/scala">
+                <include name="**/*"/>
+            </fileset>
+            <fileset dir="${src.service.dir}/java">
+                <include name="**/*"/>
+            </fileset>
+            <fileset dir="${module.service.dir}">
+                <include name="META-INF/*"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package.web" depends="compile.web">
+        <jar jarfile="${build.web.dir}/web.war">
+            <fileset dir="${build.web.dir}/bin">
+                <include name="**/*"/>
+            </fileset>
+            <!-- include the source, why not? -->
+            <fileset dir="${src.web.dir}/scala">
+                <include name="**/*"/>
+            </fileset>
+            <fileset dir="${src.web.dir}/java">
+                <include name="**/*"/>
+            </fileset>
+            <fileset dir="${module.web.dir}/web">
+                <include name="**/*"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="prepare.lib">
+        <mkdir dir="${build.dir}/lib"/>
+        <copy todir="${build.dir}/lib">
+            <fileset refid="lib.scala"/>
+        </copy>
+    </target>
+
+    <target name="package.ear" depends="package.common, package.web, package.service, prepare.lib">
+        <jar jarfile="${build.dir}/${project.name}.ear">
+            <fileset dir="${build.common.dir}">
+                <include name="common.jar"/>
+            </fileset>
+            <fileset dir="${build.service.dir}">
+                <include name="service.jar"/>
+            </fileset>
+            <fileset dir="${build.web.dir}">
+                <include name="web.war"/>
+            </fileset>
+            <fileset dir="${module.application.dir}">
+                <include name="META-INF/*"/>
+            </fileset>
+            <fileset dir="${build.dir}">
+                <include name="lib/*.jar"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="deploy">
+        <copy todir="${deploy.dir}">
+            <fileset dir="${build.dir}">
+                <include name="${project.name}.ear"/>
+            </fileset>
+        </copy>
+    </target>
+
+
+</project>
