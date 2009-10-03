@@ -1,0 +1,72 @@
+<project name="Scala Remote Chat" default="package">
+
+    <fileset id="lib.scala" dir="../lib">
+        <include name="scala-library.jar"/>
+        <include name="scala-swing.jar"/>
+    </fileset>
+
+    <path id="classpath.scala">
+        <fileset refid="lib.scala"/>
+    </path>
+
+    <path id="classpath.scala.compiler">
+        <path refid="classpath.scala"/>
+        <fileset dir="../lib">
+            <include name="scala-compiler.jar"/>
+        </fileset>
+    </path>
+
+    <taskdef resource="scala/tools/ant/antlib.xml">
+        <classpath refid="classpath.scala.compiler"/>
+    </taskdef>
+
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+
+    <target name="prepare">
+        <mkdir dir="build"/>
+        <mkdir dir="build/bin"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <scalac
+                srcdir="src/scala"
+                destdir="build/bin"
+                classpathref="classpath.scala"
+                force="changed"/>
+    </target>
+
+    <target name="package" depends="compile">
+        <jar jarfile="build/scala-chat.jar">
+            <fileset dir="build/bin">
+                <include name="*/**"/>
+            </fileset>
+            <fileset dir="src/scala">
+                <include name="*/**"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="run.client">
+        <java
+                classname="justin.scala.chat.client.ClientApplication"
+                fork="true">
+            <classpath>
+                <path refid="classpath.scala"/>
+                <pathelement location="build/scala-chat.jar"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="run.server">
+        <java
+                classname="justin.scala.chat.server.ServerApplication"
+                fork="true">
+            <classpath>
+                <path refid="classpath.scala"/>
+                <pathelement location="build/scala-chat.jar"/>
+            </classpath>
+        </java>
+    </target>
+</project>
