@@ -69,6 +69,7 @@ int main(void) {
          usb_serial_flush_output();
          
          // wait for response
+         while (!usb_serial_available());
          usb_serial_getchar();
       }
 	}

@@ -2,15 +2,18 @@ require 'rubygems'
 require 'serialport'
 require 'tk'
 
+$speed = 100
+
 class AnimatedGraph
    
    def initialize(frame)
+      
       # initialise the serial port
       @sp = SerialPort.new "/dev/tty.usbmodem12341", 9600
       @sp.write "AT\r\n"
       
       # variables for managing the graph values
-      @valueCt = 100
+      @valueCt = 300
       @valuePos = 0
       @values = Array.new(@valueCt)
       
@@ -40,17 +43,21 @@ class AnimatedGraph
       @xInc = @xWidth / (@valueCt.to_f)
       
       # graph grid
-      1.upto(9) { |i|
-         y = @height - ((@height / 10) * i)
-         TkcLine.new(@c, @xPad, y, @width - @xPad, y, :width=>2,
+      1.upto(19) { |i|
+         y = @height - ((@height / 20) * i)
+         line = TkcLine.new(@c, @xPad, y, @width - @xPad, y, :width=>1,
             :smooth=>true, :fill=>"grey90")
-         TkcText.new(@c, 15, y, :text=>"#{i * 10}")
-         TkcText.new(@c, @width - 15, y, :text=>"#{i * 10}")
+         if (i % 2 == 0) then
+            TkcText.new(@c, 15, y, :text=>"#{i * 5}")
+            TkcText.new(@c, @width - 15, y, :text=>"#{i * 5}")
+            line.width = 2
+            line.fill = "grey70"
+         end
       }
       
       # graph path, the path elements will be positioned during animation
       @graph = Array.new(@valueCt) { |i|
-         TkcLine.new(@c,0,0,0,0,:width=>1,:smooth=>true,:fill=>"red")
+         TkcLine.new(@c,0,0,0,0,:width=>2,:smooth=>true,:fill=>"red")
       }
       
       @c.pack(:fill=>:both, :expand=>true)
@@ -61,7 +68,7 @@ class AnimatedGraph
       pane.add(@graphFrame)
       
       # use a timer to call the refresh method every 500 ms
-      @timer = TkTimer.new(25) { refresh }.start(500)
+      @timer = TkTimer.new($speed) { refresh }.start(500)
    end
    
    def nextValue
