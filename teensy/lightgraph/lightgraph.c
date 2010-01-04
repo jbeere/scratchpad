@@ -65,10 +65,11 @@ int main(void) {
          
          // transmit the number via USB to whoever is interested
          phex16(v);
-         print("\n");
+         print("\r\n");
          usb_serial_flush_output();
          
-         _delay_ms(30);
+         // wait for response
+         usb_serial_getchar();
       }
 	}
 }

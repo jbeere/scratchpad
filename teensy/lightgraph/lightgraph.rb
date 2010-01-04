@@ -92,6 +92,8 @@ class BallAnimation
          s.concat(c)
          c = @sp.getc
       end
+      @sp.putc 13
+      @sp.flush
       return s
    end
    
