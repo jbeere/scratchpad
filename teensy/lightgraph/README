@@ -1,1 +1,72 @@
-TODO
+LIGHT METER
+-----------
+
+You need:
+
+- 1x Teensy
+- 1x Solderless Breadboard
+- 1x 10k light dependent resistor (RS components part 455-8036)
+- 10x 1k resistors (or a 10k resistor if you have one)
+- Mac OSX or Debian Linux
+- Free USB port
+
+Set up your circuit as follows:
+
+vcc ═══▼═╦═⌂══ gnd
+         ║
+         f1
+
+▼  = light dependent resistor
+⌂  = 10k resistor
+f1 = analog pin on the Teensy
+
+Before doing the following try these from a command prompt:
+
+prompt> irb
+irb prompt> require 'rubygems'
+irb prompt> require 'serialport'
+irb prompt> require 'tk'
+irb prompt> quit
+
+If one of the above does not work, you will have to do one or more of the
+following:
+
+-- for OSX, you must make sure you have the latest XCode installed, it's
+on the Snow Leopard disc
+-- for OSX, you need to have Ruby built with TK, here is a nice tutorial
+to do that http://www.tkdocs.com/tutorial/install.html (Do not use that
+One-Click-Installer it's rubbish, took me 3 days to undo the damage it did)
+-- you need to have rubygems installed, and the 'serialport' gem
+
+You need the newest XCode, because the old one compiles in 32 bit, and it
+doesn't work too well in Snow Leopard, I learned that the hard way.
+If you did any of these before installing Snow Leopard, you need to redo,
+because the old 32 bit stuff won't work!
+TK is for displaying graphics from Ruby
+The 'serialport' gem is a super cool gem that allows for easy serial IO,
+it is also the reason I went the Ruby route.
+
+Once all that works, brilliant, unzip the attached zip file, go to the
+directory in a terminal prompt
+
+
+promtp> make 
+
+
+Use the Teensy loader app to copy the generated lightmeter.hex file on to
+your Teensy, press the button on the Teensy to reboot it
+
+
+prompt> ruby graph.rb 
+
+
+If you get a device not configured error or something, then you need to
+find out which tty device (/dev/tty?????) is your teensym and change it in
+the graph.rb file, and try again.
+
+You should get a visual display of the reading on the light meter.
+Congrats.
+
+Read the comments in the lightmeter.c and graph.rb files to see what is
+going on, I tried to keep it readable, and commented as much as possible.
+You can ask me any question about it and I will do my best to answer you.
