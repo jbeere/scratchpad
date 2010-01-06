@@ -2,7 +2,7 @@ require 'rubygems'
 require 'serialport'
 require 'tk'
 
-$speed = 100
+$speed = 40
 
 class AnimatedGraph
    
@@ -72,14 +72,14 @@ class AnimatedGraph
    end
    
    def nextValue
+      @sp.putc(13)
+      @sp.flush
       s = ''
       c = @sp.getc
       until c == 13
          s.concat(c)
          c = @sp.getc
       end
-      @sp.putc(13)
-      @sp.flush
       return s.hex
    end
    
@@ -134,8 +134,8 @@ class AnimatedGraph
    end
    
    def cleanExit
-      #@sp.flush
-      #@sp.close
+      @sp.flush
+      @sp.close
       Tk.root.destroy
    end
 end
