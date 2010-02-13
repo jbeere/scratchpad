@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+           version="2.5">
+
+    <listener>
+        <listener-class>com.justin.gwt.nsandxs.server.GameServerBootstrap</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>com.justin.gwt.nsandxs.NaughtsAndCrosses GameService</servlet-name>
+        <servlet-class>com.justin.gwt.nsandxs.server.service.GameServiceImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>com.justin.gwt.nsandxs.NaughtsAndCrosses GameService</servlet-name>
+        <url-pattern>/com.justin.gwt.nsandxs.NaughtsAndCrosses/NaughtsAndCrossesService</url-pattern>
+    </servlet-mapping>
+</web-app>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="gwt-incubator">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/gwt-incubator-20100204-r1747.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/gwt-incubator-20100204-r1747.jar!/" />
+    </SOURCES>
+  </library>
+</component>
